@@ -3,7 +3,6 @@ package com.manders.springbootecommerce.service;
 import java.util.Set;
 import java.util.UUID;
 import javax.transaction.Transactional;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.manders.springbootecommerce.dao.CustomerRepository;
@@ -41,6 +40,14 @@ public class CheckoutServiceImpl implements CheckoutService {
     
     // populate customer with order
     Customer customer = purchase.getCustomer();
+    
+    // check if this is an existing customer
+    String theEmail = customer.getEmail();
+    Customer customerFromDBCustomer = customerRepository.findByEmail(theEmail);
+    if (customerFromDBCustomer != null) {
+      // we found the customer from DB, and then we update.
+      customer = customerFromDBCustomer;
+    }
     customer.add(order);
     
     // save to database
